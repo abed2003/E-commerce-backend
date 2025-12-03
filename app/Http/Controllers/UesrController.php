@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Users;
+use DB;
 use Illuminate\Http\Request;
 
 class UesrController extends Controller
@@ -35,6 +36,22 @@ class UesrController extends Controller
         }
         
     }
+
+    public function showAllDataAboutUsers()
+    {
+        $AllUsers = DB::table('users')
+        ->join('Cities','users.cityId','=','Cities.cityId')
+        ->join('Address','users.addressId','=','Address.addressId')
+        ->select('users.*','Cities.cityName','Cities.deliveryFees' , 'Address.street')
+        ->get();
+        if ( !$AllUsers ) {
+            return response()->json(["message" => "No users found"], 404);
+        }
+        else { 
+            return response()->json( $AllUsers , 200);
+        }
+        
+    } 
     public function show($UserId)
     {
         $User = Users::where('UserId' , $UserId)->first();

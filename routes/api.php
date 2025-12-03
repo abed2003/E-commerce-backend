@@ -18,6 +18,7 @@ use Illuminate\Support\Facades\Route;
 Route::post('/addUser', [UesrController::class, 'store']);
 Route::get('/showUser/{UserId}', [UesrController::class, 'show']);
 Route::get('/getAllUser', [UesrController::class, 'getAllUsers']);
+Route::get('/showAllDataAboutUsers', [UesrController::class, 'showAllDataAboutUsers']);
 Route::delete('/deleteUser/{id}', [UesrController::class, 'destroy']);
 Route::put('/updaetUser/{id}', [UesrController::class, 'update']);
 
@@ -83,6 +84,7 @@ Route::get('/showItemPhotosByItemId/{ItemId}', [ItemPhotosController::class,'sho
 
 // Order Routes
 Route::get('/showOrderById/{OrderId}', [OrderController::class,'show']);
+Route::get('/showOrderIfontmation', [OrderController::class,'showOrderIfontmation']);
 Route::get('/showAllOrder', [OrderController::class,'showAllOrder']);
 Route::put('/updateOrder/{OrderId}', [OrderController::class,'update']);
 Route::delete('/deleteOrder/{OrderId}', [OrderController::class,'destroy']);

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Order;
+use DB;
 use Illuminate\Http\Request;
 
 class OrderController extends Controller
@@ -39,6 +40,19 @@ class OrderController extends Controller
             return response()->json(["message" => "Item not found"], 404);
         } else {
             return response()->json($getOrderById, 200);
+        }
+    }
+
+    public function showOrderIfontmation (){
+        $getData = DB::table('Order')
+        ->join('OrderList','Order.OrderId','=','OrderList.OrderId')
+        ->select('Order.*','OrderList.Quantity','OrderList.Size')
+        ->get();
+        if ( !$getData ) {
+            return response()->json(["message" => "No Item found"], 404);
+        }
+        else { 
+            return response()->json( $getData , 200);
         }
     }
     public function showAllOrder(){
