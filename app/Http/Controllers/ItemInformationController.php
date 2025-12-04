@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Item;
 use App\Models\ItemInformation;
 use Illuminate\Http\Request;
 
@@ -9,21 +10,27 @@ class ItemInformationController extends Controller
 {
     public function store(Request $request)
     {
-        $addItem = ItemInformation::create([
-            "ItemId" => $request->ItemId,
-            "Size" => $request->Size,
-            "Quantity" => $request->Quantity
-        ]);
-        if ($addItem) {
-            return response()->json(["message" => "you are added new Item"], 201);
-        } else {
-            return response()->json(["message" => "Item creation failed"], 404);
+        $getItem = Item::where("ItemId" , $request->ItemId)->first();
+        if ( !$getItem) {
+            return response()->json(["message"=>"Fiald to add because the item not define"],404);
+        }
+        else { 
+            $addItem = ItemInformation::create([
+                "ItemId" => $request->ItemId,
+                "Size" => $request->Size,
+                "Quantity" => $request->Quantity
+            ]);
+            if ($addItem) {
+                return response()->json(["message" => "you are added new Item"], 201);
+            } else {
+                return response()->json(["message" => "Item creation failed"], 404);
+            }
         }
     }
     public function show($InfoId)
     {
-        $getItemById = ItemInformation::findOrFail($InfoId);
-        if (!$getItemById) {
+        $getItemById = ItemInformation::where("InfoId" ,$InfoId)->first();
+        if (!$getItemById ) {
             return response()->json(["message" => "Item not found"], 404);
         } else {
             return response()->json($getItemById, 200);
@@ -38,7 +45,7 @@ class ItemInformationController extends Controller
     }
     public function update (Request $request , $InfoId)
     {
-        $getItemById = ItemInformation::findOrFail($InfoId);
+        $getItemById = ItemInformation::where("InfoId" , $InfoId)->first();
         if ( !$getItemById ) {
             return response()->json(["message" => "Item not found"], 404);
         }
@@ -53,8 +60,8 @@ class ItemInformationController extends Controller
     }
 
     public function destroy ( $InfoId) {
-        $getItemById = ItemInformation::findOrFail($InfoId);
-        if ( !$getItemById ) {
+        $getItemById = ItemInformation::where("InfoId" , $InfoId)->first();
+        if ( $getItemById ) {
             return response()->json(["message"=>"The Item not found"] , 404);
         }
         else {

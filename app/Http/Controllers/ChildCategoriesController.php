@@ -2,16 +2,29 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Categories;
 use App\Models\ChildCategories;
 use Illuminate\Http\Request;
 
 class ChildCategoriesController extends Controller
 {
     public function store (Request $request){
+        $vledationDate = $request->validate([
+            "ParentCategoryId"=>"required",
+            "CategoryName"=>"required|string|max:255",
+        ]);
+        // $addData = new ChildCategories();
+        // $addData->ParentCategoryId = $vledationDate["ParentCategoryId"];
+        // $addData->ParentCategoryName = $vledationDate["CategoryName"];
+        // $result = $addData->save();
+        $getParentCategory = Categories::where("CategoryId",$vledationDate["ParentCategoryId"])->first();
+        if ( !$getParentCategory ) {
+            return response()->json(["message"=>"The Parent Category not found"] , 404);
+        }
         $addData = ChildCategories::create(
             [
-                "ParentCategoryId"=> $request->ParentCategoryId,
-                "CategoryName"=> $request->CategoryName
+                "ParentCategoryId"=> $vledationDate["ParentCategoryId"],
+                "CategoryName"=> $vledationDate["CategoryName"],
             ]
         );
         if ($addData){
@@ -22,7 +35,7 @@ class ChildCategoriesController extends Controller
 
     public function destroy ($childCategoryId)
     {
-        $childCategory = ChildCategories::findOrFail($childCategoryId);
+        $childCategory = ChildCategories::where("CategoryId",$childCategoryId)->first();
         if ( !$childCategory ) {
             return response()->json(["message"=>"The Child Category not found"] , 404);
         }
@@ -33,16 +46,20 @@ class ChildCategoriesController extends Controller
     }
 
     public function  update (Request $request , $CategoryId){
-        $childCategory = ChildCategories::findOrFail($CategoryId);
+        $childCategory = ChildCategories::where("CategoryId",$CategoryId)->first();
         if ( !$childCategory ) {
             return response()->json(["message"=>"The Child Category not found"] , 404);
         }
         else {
-            $childCategory->update([
-                $childCategory->ParentCategoryId = $request->ParentCategoryId === null ? $childCategory->ParentCategoryId : $request->ParentCategoryId,
-                $childCategory->CategoryName = $request->CategoryName === null ? $childCategory->CategoryName : $request->CategoryName,
-            ]);
-            return response()->json(["message"=>"you are updated Child Category"] , 200);
+            $getParentCategory = Categories::where("CategoryId",$request->ParentCategoryId)->first();
+            if  ($getParentCategory !== null){
+                $childCategory->update([
+                    $childCategory->ParentCategoryId = $request->ParentCategoryId === null ? $childCategory->ParentCategoryId : $request->ParentCategoryId,
+                    $childCategory->CategoryName = $request->CategoryName === null ? $childCategory->CategoryName : $request->CategoryName,
+                ]);
+                return response()->json(["message"=>"you are updated Child Category"] , 200);
+            }
+            return response()->json(["message"=>"The Parent Category not found"] , 404);
         }
         
     }
@@ -56,7 +73,7 @@ class ChildCategoriesController extends Controller
     }
 
     public function show ($CategoryId) { 
-        $getChildCategoryById = ChildCategories::findOrFail($CategoryId);
+        $getChildCategoryById = ChildCategories::where("CategoryId",$CategoryId)->first();
         if ( !$getChildCategoryById ) {
             return response()->json(["message" => "Child Category not found"], 404);
         }

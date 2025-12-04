@@ -11,70 +11,86 @@ class UesrController extends Controller
     public function index()
     {
         return "User Controller";
-    }   
+    }
     public function store(Request $request)
     {
-        if ( $request->FullName !== null && $request->Phone !== null && $request->Password !== null 
-            && $request->Email !== "" && $request->Role !== "" && $request->street !== "" 
-            && $request->cityId !== "" && $request->addressId !== "" ) {
+        if (
+            $request->FullName !== null && $request->Phone !== null && $request->Password !== null
+            && $request->Email !== "" && $request->Role !== "" && $request->street !== ""
+            && $request->cityId !== "" && $request->addressId !== ""
+        ) {
             $Adduser = Users::create([
-            "FullName"=> $request->FullName,
-            "Phone"=> $request->Phone,
-            "Email"=> $request->Email === null ? "" : $request->Email, 
-            "Role"=> $request->Role === null ? "user" : $request->Role ,
-            "Password"=> $request->Password,
-            "street"=> $request->street ,
-            "cityId"=> $request->cityId ,
-            "addressId"=> $request->addressId ,
+                "FullName" => $request->FullName,
+                "Phone" => $request->Phone,
+                "Email" => $request->Email === null ? "" : $request->Email,
+                "Role" => $request->Role === null ? "user" : $request->Role,
+                "Password" => $request->Password,
+                "street" => $request->street,
+                "cityId" => $request->cityId,
+                "addressId" => $request->addressId,
             ]);
             $Adduser->save();
-            return response()->json( $Adduser, 201) ;
+            return response()->json($Adduser, 201);
             // return response()->json(["message"=> "User created successfully"] , 201);
-        } 
-        else {
-            return response()->json(["message"=> "User creation failed"] , 500);
+        } else {
+            return response()->json(["message" => "User creation failed"], 500);
         }
-        
+
     }
 
     public function showAllDataAboutUsers()
     {
         $AllUsers = DB::table('users')
-        ->join('Cities','users.cityId','=','Cities.cityId')
-        ->join('Address','users.addressId','=','Address.addressId')
-        ->select('users.*','Cities.cityName','Cities.deliveryFees' , 'Address.street')
-        ->get();
-        if ( !$AllUsers ) {
+            ->join('Cities', 'users.cityId', '=', 'Cities.cityId')
+            ->join('Address', 'users.addressId', '=', 'Address.addressId')
+            ->select('users.*', 'Cities.cityName', 'Cities.deliveryFees', 'Address.street')
+            ->get();
+        if (!$AllUsers) {
             return response()->json(["message" => "No users found"], 404);
+        } else {
+            return response()->json($AllUsers, 200);
         }
-        else { 
-            return response()->json( $AllUsers , 200);
-        }
-        
-    } 
+
+    }
     public function show($UserId)
     {
-        $User = Users::where('UserId' , $UserId)->first();
-        if ( !$User ) {
+        $User = Users::where('UserId', $UserId)->first();
+        if (!$User) {
             return response()->json(["message" => "User not found"], 404);
+        } else {
+            return response()->json($User, 200);
         }
-        else {
-            return response()->json($User , 200);
-        }
-        
+
     }
-    public function getAllUsers ()
+
+    public function showAllDataAboutUsersByUserId($UserId)
+    {
+        $AllUsers = DB::table('users')
+            ->join('Cities', 'users.cityId', '=', 'Cities.cityId')
+            ->join('Address', 'users.addressId', '=', 'Address.addressId')
+            ->select('users.*', 'Cities.cityName', 'Cities.deliveryFees', 'Address.street')
+            ->where('users.UserId', $UserId)
+            ->get();
+        if (!$AllUsers) {
+            return response()->json(["message" => "No users found"], 404);
+        } else {
+            return response()->json($AllUsers, 200);
+        }
+
+    }
+
+    public function getAllUsers()
     {
         $AllUsers = Users::all();
-        if ( !$AllUsers ) {
+        if (!$AllUsers) {
             return response()->json(["message" => "No users found"], 404);
         }
-        return response()->json( $AllUsers , 200);
+        return response()->json($AllUsers, 200);
     }
     public function update(Request $request, $id)
     {
         $getUser = Users::where('UserId', $id)->first();
-        if ( !$getUser ) {
+        if (!$getUser) {
             return response()->json(["message" => "User not found"], 404);
         }
         $getUser->FullName = $request->input('FullName', $getUser->FullName);
@@ -86,14 +102,15 @@ class UesrController extends Controller
         $getUserAfterUpdate = Users::where('UserId', $id)->first();
 
 
-        return response()->json(["message"=> $getUserAfterUpdate] , 200);
+        return response()->json(["message" => $getUserAfterUpdate], 200);
 
     }
-    public function destroy($id){
-        $deleteUser = Users::where('UserId' , $id)->delete();
-        if ( !$deleteUser ) {
-            return response()->json( ["message" => "User not found" ], 404);
+    public function destroy($id)
+    {
+        $deleteUser = Users::where('UserId', $id)->delete();
+        if (!$deleteUser) {
+            return response()->json(["message" => "User not found"], 404);
         }
-        return response()->json(["message"=> "User deleted successfully"], 200);
+        return response()->json(["message" => "User deleted successfully"], 200);
     }
 }

@@ -19,6 +19,7 @@ Route::post('/addUser', [UesrController::class, 'store']);
 Route::get('/showUser/{UserId}', [UesrController::class, 'show']);
 Route::get('/getAllUser', [UesrController::class, 'getAllUsers']);
 Route::get('/showAllDataAboutUsers', [UesrController::class, 'showAllDataAboutUsers']);
+Route::get('/showAllDataAboutUsersByUserId/{UserId}', [UesrController::class, 'showAllDataAboutUsersByUserId']);
 Route::delete('/deleteUser/{id}', [UesrController::class, 'destroy']);
 Route::put('/updaetUser/{id}', [UesrController::class, 'update']);
 
@@ -40,7 +41,7 @@ Route::put('/updateAddress/{addressId}', [AddressController::class,'update']);
 // Categories Routes
 Route::delete('/deleteCategories/{categoryId}', [CategoriesController::class,'destroy']);
 Route::get('/showAllCategories', [CategoriesController::class,'showAllCategories']);
-Route::get('/showCategoriesById/{categoryId}', [CategoriesController::class,'categoryId']);
+Route::get('/showCategoriesById/{categoryId}', [CategoriesController::class,'show']);
 Route::post('/addCategories', [CategoriesController::class,'store']);
 Route::put('/updateCategories/{categoryId}', [CategoriesController::class,'update']);
 

@@ -22,7 +22,7 @@ class AddressController extends Controller
     }
 
     function show ($addressId) {
-        $getAddressById = Address::findOrFail($addressId);
+        $getAddressById = Address::find($addressId);
         if ( !$getAddressById ) {
             return response()->json(["message" => "Address not found"], 404);
         }
@@ -63,13 +63,18 @@ class AddressController extends Controller
     }
     
     function deleteAddress ($addressId){
-        $getAddress = Address::findOrFail($addressId);
-        if ( !$getAddress ) {
-            return response()->json(["message" => "Address not found"], 404);
-        }
-        else {
-            $getAddress->delete();
-            return response()->json(["message" => "Address deleted successfully"], 200);
-        }
+        try {
+        $address = Address::findOrFail($addressId);
+        $address->delete();
+
+        return response()->json([
+            "message" => "Address deleted successfully"
+        ], 200);
+
+    } catch (\Exception $e) {
+        return response()->json([
+            "message" => "Address not found"
+        ], 404);
+    }
     }
 }
